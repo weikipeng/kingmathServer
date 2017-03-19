@@ -69,47 +69,35 @@ class LicenseDao
     }
 
     public function valid(License $data)
-    {//----
+    {
+        //----
         $tResult = new Resourse();
-        $sql = "SELECT license FROM " . $this->tableName .
-            " WHERE license= '$data->licenseCode'";
 
-        $result = mysqli_query($this->conn, $sql);
-
-        /* determine number of rows result set */
-        $row_cnt = $result->num_rows;
-
-        printf("结果集：Result set has %d rows.\n", $row_cnt);
-
-        if ($row_cnt <= 0) {
-            $tResult->errCode = -1;
-            $tResult->errMsg = "注册码不存在";
-            return $tResult;
-        }
         $tCellPhone = base64_encode($data->cellPhone);
 
-        //----------
-        if ($row = mysqli_fetch_array($result)) {
-            if (empty($row['cellphone'])) {
-                //手机号码没有被绑定
-                printf("手机号码没有被绑定");
-                $tResult->errCode = -2;
-                $tResult->errMsg = "手机号码没有被绑定";
-            } else if (strcmp($row['cellphone'], $tCellPhone)) {
-                //手机号码已经被绑定,匹配正确
-                printf("手机号码已经被绑定,匹配正确");
-                $tResult->errCode = 0;
-                $tResult->errMsg = "手机号码已经被绑定,匹配正确";
-            } else {
-                //手机号码已经被绑定,但不匹配
-                printf("手机号码已经被绑定,但不匹配");
-                $tResult->errCode = -3;
-                $tResult->errMsg = "手机号码已经被绑定,但不匹配";
-            }
+        $row = $this->query($data->licenseCode);
+
+        if ($row instanceof Resourse) {
+            return $row;
         }
 
-        /* close result set */
-        $result->close();
+        //----------
+        if (empty($row['cellphone'])) {
+            //手机号码没有被绑定
+            printf("手机号码没有被绑定");
+            $tResult->errCode = -2;
+            $tResult->errMsg = "手机号码没有被绑定";
+        } else if (strcmp($row['cellphone'], $tCellPhone)) {
+            //手机号码已经被绑定,匹配正确
+            printf("手机号码已经被绑定,匹配正确");
+            $tResult->errCode = 0;
+            $tResult->errMsg = "手机号码已经被绑定,匹配正确";
+        } else {
+            //手机号码已经被绑定,但不匹配
+            printf("手机号码已经被绑定,但不匹配");
+            $tResult->errCode = -3;
+            $tResult->errMsg = "手机号码已经被绑定,但不匹配";
+        }
 
         return $tResult;
     }
