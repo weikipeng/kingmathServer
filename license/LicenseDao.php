@@ -73,7 +73,8 @@ class LicenseDao
         //----
         $tResult = new Resourse();
 
-        $tCellPhone = base64_encode($data->cellPhone);
+//        $tCellPhone = base64_encode($data->cellPhone);
+        $tCellPhone = $data->cellPhone;
 
         $row = $this->query($data->licenseCode);
 
@@ -83,11 +84,12 @@ class LicenseDao
 
         //----------
         if (empty($row['cellphone'])) {
-            //手机号码没有被绑定
-            printf("手机号码没有被绑定");
-            $tResult->errCode = -2;
-            $tResult->errMsg = "手机号码没有被绑定";
-        } else if (strcmp($row['cellphone'], $tCellPhone)) {
+//            //手机号码没有被绑定
+//            printf("手机号码没有被绑定");
+//            $tResult->errCode = -2;
+//            $tResult->errMsg = "手机号码没有被绑定";
+            $tResult = $this->update($data);
+        } else if (strcmp($row['cellphone'], $tCellPhone) == 0) {
             //手机号码已经被绑定,匹配正确
             printf("手机号码已经被绑定,匹配正确");
             $tResult->errCode = 0;
@@ -105,7 +107,7 @@ class LicenseDao
     public function query($licenseCode)
     {
         $tResult = new Resourse();
-        $sql = "SELECT license FROM " . $this->tableName .
+        $sql = "SELECT * FROM " . $this->tableName .
             " WHERE license= '$licenseCode'";
 
         $result = mysqli_query($this->conn, $sql);
@@ -121,8 +123,6 @@ class LicenseDao
             return $tResult;
         }
 
-        $tCellPhone = base64_encode($data->cellPhone);
-
         //----------
         if ($row = mysqli_fetch_array($result)) {
             $tResult = $row;
@@ -132,6 +132,30 @@ class LicenseDao
         $result->close();
 
         return $tResult;
+    }
+
+    public function update(License $data)
+    {
+//        $cellPhone = base64_decode($data->cellPhone, true);
+        $cellPhone = $data->cellPhone;
+
+        $sql = "update " . $this->tableName .
+            " set cellphone = '$cellPhone' WHERE license= '$data->licenseCode'";
+
+        $result = mysqli_query($this->conn, $sql);
+
+        if ($result) {
+            $result = $this->query($data->licenseCode);
+            if (!($result instanceof Resourse)) {
+                $result = License::fromResult($result);
+            }
+        } else {
+            $result = new Resourse();
+            $result->errCode = -1;
+            $result->errMsg = "绑定手机失败";
+        }
+
+        return $result;
     }
 
     private function connect()

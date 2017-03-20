@@ -14,4 +14,14 @@ class License
     public $cellPhone = "18911001100";
     /* 签名 */
     public $sign;
+
+    public static function fromResult($dbResult)
+    {
+        $result = new License();
+
+        $result->licenseCode = $dbResult["license"];
+        $result->cellPhone= $dbResult["cellphone"];
+
+        return $result;
+    }
 }
