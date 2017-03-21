@@ -9,9 +9,9 @@ $tempLicense->licenseCode = $_POST["l"];
 $tempLicense->sign = $_POST["s"];
 
 $result = new Resourse();
-if (!NumberUtil::isMobile($tempLicense->cellPhone)) {
+if (!NumberUtil::isIMSI($tempLicense->cellPhone)) {
     $result->errCode = -1;
-    $result->errMsg = "手机号码格式不正确";
+    $result->errMsg = "手机身份不正确";
     echo json_encode($result);
     return;
 }

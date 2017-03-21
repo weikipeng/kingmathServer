@@ -1,6 +1,7 @@
 <?php
 require_once("License.php");
 require_once("../model/Resourse.php");
+require_once("../util/FOpenLog.php");
 
 /**
  * Created by PhpStorm.
@@ -10,6 +11,8 @@ require_once("../model/Resourse.php");
  */
 class LicenseDao
 {
+    private static $KEY_LICENSE = "MH25KXFYWR5CSJKN67VKP2H95FRBM2";
+    private static $KEY_CELLPHONE = "CK4APBVXAS9WDW34H163TRJDT5PSJK";
     protected $serverName = "localhost";
     protected $userName = "root";
     protected $password = "root";
@@ -25,17 +28,17 @@ class LicenseDao
         if ($this->conn->connect_error) {
             die("连接失败: " . $this->conn->connect_error);
         } else {
-            echo "连接成功";
+            FOpenLog::e("连接成功");
         }
 
         // Make my_db the current database
         //选择数据库
         $db_selected = mysqli_select_db($this->conn, $this->dbName);
         if (!$db_selected) {
-            echo "\n选择.....失败 " . $this->dbName;
+            FOpenLog::e("\n选择.....失败 " . $this->dbName);
             $this->initDataBase();
         } else {
-            echo "\n选择" . $this->dbName;
+            FOpenLog::e("\n选择" . $this->dbName);
         }
 
         $this->createTable();
@@ -52,7 +55,7 @@ class LicenseDao
         /* determine number of rows result set */
         $row_cnt = $result->num_rows;
 
-        printf("结果集：Result set has %d rows.\n", $row_cnt);
+        FOpenLog::e("结果集：Result set has %d rows.\n", $row_cnt);
 
         /* close result set */
         $result->close();
@@ -64,7 +67,7 @@ class LicenseDao
         //----
         $sql = "INSERT IGNORE INTO " . $this->tableName
             . " (license) VALUES ('" . $tLicense->licenseCode . "')";
-        echo "sql ===>/n $sql";
+        FOpenLog::e("sql ===>/n $sql");
         return $this->conn->query($sql);
     }
 
@@ -85,18 +88,18 @@ class LicenseDao
         //----------
         if (empty($row['cellphone'])) {
 //            //手机号码没有被绑定
-//            printf("手机号码没有被绑定");
+//            FOpenLog::e("手机号码没有被绑定");
 //            $tResult->errCode = -2;
 //            $tResult->errMsg = "手机号码没有被绑定";
             $tResult = $this->update($data);
         } else if (strcmp($row['cellphone'], $tCellPhone) == 0) {
             //手机号码已经被绑定,匹配正确
-            printf("手机号码已经被绑定,匹配正确");
+            FOpenLog::e("手机号码已经被绑定,匹配正确");
             $tResult->errCode = 0;
             $tResult->errMsg = "手机号码已经被绑定,匹配正确";
         } else {
             //手机号码已经被绑定,但不匹配
-            printf("手机号码已经被绑定,但不匹配");
+            FOpenLog::e("手机号码已经被绑定,但不匹配");
             $tResult->errCode = -3;
             $tResult->errMsg = "手机号码已经被绑定,但不匹配";
         }
@@ -115,7 +118,7 @@ class LicenseDao
         /* determine number of rows result set */
         $row_cnt = $result->num_rows;
 
-        printf("结果集：Result set has %d rows.\n", $row_cnt);
+        FOpenLog::e("结果集：Result set has %d rows.\n", $row_cnt);
 
         if ($row_cnt <= 0) {
             $tResult->errCode = -1;
@@ -173,9 +176,9 @@ class LicenseDao
         // 创建数据库
         $sql = "CREATE DATABASE " . $this->dbName;
         if ($this->conn->query($sql) === TRUE) {
-            echo "数据库创建成功";
+            FOpenLog::e("数据库创建成功");
         } else {
-            echo "Error creating database: " . $this->conn->error;
+            FOpenLog::e("Error creating database: " . $this->conn->error);
         }
         //选择数据库
         mysqli_select_db($this->dbName, $this->conn);
@@ -191,9 +194,9 @@ class LicenseDao
         $db_selected = mysqli_select_db($this->conn, $this->dbName);
 
         if (!$db_selected) {
-            echo "\n选择.....失败 " . $this->dbName;
+            FOpenLog::e("\n选择.....失败 " . $this->dbName);
         } else {
-            echo "\n选择" . $this->dbName;
+            FOpenLog::e("\n选择" . $this->dbName);
         }
 
         // 使用 sql 创建数据表
@@ -206,9 +209,9 @@ date TIMESTAMP)";
         //IF NOT EXISTS
 
         if ($this->conn->query($sql) === TRUE) {
-            echo "Table " . $this->tableName . "created successfully";
+            FOpenLog::e("Table " . $this->tableName . "created successfully");
         } else {
-            echo "创建数据表错误: " . $this->conn->error;
+            FOpenLog::e("创建数据表错误: " . $this->conn->error);
         }
 
     }
