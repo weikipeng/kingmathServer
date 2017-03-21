@@ -1,5 +1,6 @@
 <?php
 require_once("LicenseDao.php");
+require_once("../util/Se.php");
 require_once("../util/NumberUtil.php");
 require_once("../model/Resourse.php");
 header('Content-Type: application/json; charset=utf-8');
@@ -7,6 +8,9 @@ $tempLicense = new License();
 $tempLicense->cellPhone = $_POST["c"];
 $tempLicense->licenseCode = $_POST["l"];
 $tempLicense->sign = $_POST["s"];
+$tempLicense->ipAddress = Se::getClientIP();
+
+//echo json_encode($tempLicense);
 
 $result = new Resourse();
 if (!NumberUtil::isIMSI($tempLicense->cellPhone)) {

@@ -15,6 +15,8 @@ class License
     /* 签名 */
     public $sign;
 
+    public $ipAddress;
+
     public static function fromResult($dbResult)
     {
         $result = new License();
