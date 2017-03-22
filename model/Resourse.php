@@ -8,6 +8,7 @@
  */
 class Resourse
 {
-    public $errCode;
-    public $errMsg;
+    public $errCode = 0;
+    public $errMsg = "";
+    public $res;
 }

@@ -78,7 +78,7 @@ updateDate TIMESTAMP)";
         /* determine number of rows result set */
         $row_cnt = $result->num_rows;
 
-        FOpenLog::e("结果集：Result set has %d rows.\n", $row_cnt);
+        FOpenLog::e("结果集：Result set has , $row_cnt rows.\n");
 
         if ($row_cnt <= 0) {
             $tResult->errCode = -1;
@@ -93,6 +93,24 @@ updateDate TIMESTAMP)";
 
         /* close result set */
         $result->close();
+
+        return $tResult;
+    }
+
+    public function updateAuthorization($userName,$key)
+    {
+        $tResult = new Resourse();
+
+        $sql = "update " . $this->tableName .
+            " set authtication= '$key' where userName = '$userName'";
+
+        $result = mysqli_query($this->conn, $sql);
+
+        if (!$result) {
+            $tResult->errCode = -1;
+            $tResult->errMsg = "更新authtication失败";
+            return $tResult;
+        }
 
         return $tResult;
     }

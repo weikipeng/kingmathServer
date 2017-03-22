@@ -10,7 +10,27 @@ require_once("math/KingRandom.php");
 //$tempLicense->sign = $_POST["s"];
 //echo json_encode($tempLicense);
 
-echo KingRandom::randKeyString(30);
+//echo KingRandom::randKeyString(30);
+
+
+//---------
+//$stuff = array(
+//    array( 'label' => 'name 1', 'value' => 1 ),
+//    array( 'label' => 'name 2', 'value' => 2 ),
+//    array( 'label' => 'name 3', 'value' => 3 ),
+//);
+//
+//array_push($stuff, array('label' => 'name 4', 'value' => 4));
+//echo json_encode( $stuff );
+
+//---------
+$stuff = array(
+    'label' => 'name 3', 'value' => 3
+);
+
+$stuff["name"] = "value";
+echo json_encode($stuff);
+
 ?>
 
 
