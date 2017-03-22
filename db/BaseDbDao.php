@@ -1,5 +1,6 @@
 <?php
 require_once("../util/FOpenLog.php");
+
 /**
  * Created by PhpStorm.
  * User: wiki
@@ -42,11 +43,11 @@ class BaseDbDao
         $sql = "CREATE DATABASE " . $this->dbName;
         if ($this->conn->query($sql) === TRUE) {
             FOpenLog::e("数据库创建成功");
+            //选择数据库
+            mysqli_select_db($this->conn, $this->dbName);
         } else {
             FOpenLog::e("Error creating database: " . $this->conn->error);
         }
-        //选择数据库
-        mysqli_select_db($this->dbName, $this->conn);
     }
 
     public function close()

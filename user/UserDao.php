@@ -48,8 +48,52 @@ updateDate TIMESTAMP)";
 
         if ($this->conn->query($sql) === TRUE) {
             FOpenLog::e("Table " . $this->tableName . "created successfully");
+            $this->initAdmin();
         } else {
             FOpenLog::e("创建数据表错误: " . $this->conn->error);
         }
+    }
+
+    protected function initAdmin()
+    {
+        $password = md5('admin');
+        //----
+        $sql = "INSERT IGNORE INTO " . $this->tableName
+            . " (userName,password,createDate) VALUES ('admin','$password',now())";
+        FOpenLog::e("sql ===>/n $sql");
+        return $this->conn->query($sql);
+    }
+
+    public function query(User $user)
+    {
+        $tResult = new Resourse();
+
+        $tpassword = md5($user->password);
+
+        $sql = "SELECT * FROM " . $this->tableName .
+            " WHERE userName= '$user->userName' and password = '$tpassword'";
+
+        $result = mysqli_query($this->conn, $sql);
+
+        /* determine number of rows result set */
+        $row_cnt = $result->num_rows;
+
+        FOpenLog::e("结果集：Result set has %d rows.\n", $row_cnt);
+
+        if ($row_cnt <= 0) {
+            $tResult->errCode = -1;
+            $tResult->errMsg = "用户不存在";
+            return $tResult;
+        }
+
+        //----------
+        if ($row = mysqli_fetch_array($result)) {
+            $tResult = $row;
+        }
+
+        /* close result set */
+        $result->close();
+
+        return $tResult;
     }
 }

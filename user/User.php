@@ -15,4 +15,14 @@ class User
     public $passwordDigest;
 
     public $role;
+
+    public $authtication;
+
+    public $ipAddress;
+
+    public $createDate;
+
+    public $updateDate;
+
+    public $sign;
 }
