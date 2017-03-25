@@ -40,13 +40,18 @@ if ($queryResult instanceof Resourse && $queryResult->errCode != 0) {
     $res["ip"] = $tempUser->ipAddress;
 
     //---
-    $keyJson = [];
-    $keyJson["userName"] = $res["userName"];
-    $keyJson["Authorization"] = $res["key"];
-    $keyJson["ip"] = $res["ip"];
-    $res["key"] = base64_encode(json_encode($keyJson));
+//    $keyJson = [];
+//    $keyJson["userName"] = $res["userName"];
+//    $keyJson["Authorization"] = $res["key"];
+//    $keyJson["ip"] = $res["ip"];
+//    $res["key"] = base64_encode(json_encode($keyJson));
 
-    $result->res = array_filter($res);
+    //=----
+//    $res["keyRaw"] = json_encode($keyJson);
+//
+//    $result->res = array_filter($res);
+
+    $result->res = base64_encode(json_encode($res));
 }
 
 

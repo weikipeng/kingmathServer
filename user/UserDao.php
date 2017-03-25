@@ -97,7 +97,7 @@ updateDate TIMESTAMP)";
         return $tResult;
     }
 
-    public function updateAuthorization($userName,$key)
+    public function updateAuthorization($userName, $key)
     {
         $tResult = new Resourse();
 
@@ -114,4 +114,34 @@ updateDate TIMESTAMP)";
 
         return $tResult;
     }
+
+    public function verify($data)
+    {
+        if (empty($data)) {
+            return false;
+        }
+
+        $tData = json_decode(base64_decode($data),true);
+        if (empty($tData["key"])) {
+            return false;
+        }
+
+        $tData = $tData["key"];
+
+        $sql = "SELECT * FROM " . $this->tableName .
+            " WHERE authtication= '$tData'";
+
+        $result = mysqli_query($this->conn, $sql);
+
+        $row_cnt = $result->num_rows;
+
+        if ($row_cnt <= 0) {
+            return false;
+        }
+
+        $result->close();
+
+        return true;
+    }
+
 }

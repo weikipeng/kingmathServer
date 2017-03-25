@@ -17,12 +17,15 @@ class License
 
     public $ipAddress;
 
+    public $corporation;
+
     public static function fromResult($dbResult)
     {
         $result = new License();
 
         $result->licenseCode = $dbResult["license"];
-        $result->cellPhone= $dbResult["cellphone"];
+        $result->cellPhone = $dbResult["cellphone"];
+//        $result->corporation = $dbResult["corporation"];
 
         return $result;
     }

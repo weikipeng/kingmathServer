@@ -152,6 +152,7 @@ class LicenseDao extends BaseDbDao
         // 使用 sql 创建数据表
         $sql = "CREATE TABLE IF NOT EXISTS " . $this->tableName . " (
 id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
+groupId INT(6) UNSIGNED,
 license VARCHAR(30) NOT NULL UNIQUE,
 cellphone VARCHAR(30),
 date TIMESTAMP)";
@@ -164,5 +165,43 @@ date TIMESTAMP)";
             FOpenLog::e("创建数据表错误: " . $this->conn->error);
         }
 
+    }
+
+    public function getList()
+    {
+        $tResult = new Resourse();
+        $resultArray = [];
+
+        $sql = "SELECT * FROM " . $this->tableName;
+
+        $queryResult = mysqli_query($this->conn, $sql);
+
+        /* determine number of rows result set */
+        $row_cnt = $queryResult->num_rows;
+
+        FOpenLog::e("查询序列号结果集：Result set has %d rows.\n", $row_cnt);
+
+        if ($row_cnt <= 0) {
+            return $tResult;
+        }
+
+        //----------
+        while ($row = mysqli_fetch_array($queryResult)) {
+            $item = [];
+            $item["key"] = $row["license"];
+            $item["groupId"] = $row["groupId"];
+            array_push($resultArray, $item);
+        }
+
+        /* close result set */
+        $queryResult->close();
+
+        $tResult->res = array_filter($resultArray);
+
+        return $tResult;
+    }
+
+    public function queryAll()
+    {
     }
 }
