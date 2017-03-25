@@ -5,22 +5,13 @@
  * Date: 2017/3/19
  * Time: 12:25
  */
-require_once("../base/base_header.php");
+require_once("../base/base_authorization_header.php");
 require_once("../util/FOpenLog.php");
 require_once("LicenseDao.php");
 require_once("../math/KingRandom.php");
 require_once("License.php");
 require_once("../user/UserDao.php");
 $NUM_KEY = 4;
-
-$responseResult = new Resourse();
-
-if (empty($headers["Authorization"]) || !isset($headers["Authorization"])) {
-    $responseResult->errCode = -1;
-    $responseResult->errMsg = "没有登录";
-    echo json_encode($responseResult);
-    return;
-}
 
 $nParam = [];
 $nParam["corporation"] = $_POST["c"];
@@ -43,23 +34,6 @@ if (empty($nParam["corporation"])) {
     echo json_encode($responseResult);
     return;
 }
-
-
-//-检查用户身份
-
-//echo json_encode($nParam);
-
-$tUserDao = new UserDao();
-$tUserDao->init();
-if (!$tUserDao->verify($nParam["Authorization"])) {
-    $responseResult->errCode = -2;
-    $responseResult->errMsg = "用户无效";
-    echo json_encode($responseResult);
-    $tUserDao->close();
-    return;
-}
-$tUserDao->close();
-
 
 $tDbDao = new LicenseDao();
 $tDbDao->init();
