@@ -14,7 +14,7 @@ if (empty($headers["Authorization"]) || !isset($headers["Authorization"])) {
     $responseResult->errCode = -1;
     $responseResult->errMsg = "没有登录";
     echo json_encode($responseResult);
-    return;
+    die("没有登录");
 }
 
 //-检查用户身份
@@ -28,7 +28,7 @@ if (!$tUserDao->verify($headers["Authorization"])) {
     $responseResult->errMsg = "用户无效";
     echo json_encode($responseResult);
     $tUserDao->close();
-    return;
+    die("用户无效");
 }
 $tUserDao->close();
 
