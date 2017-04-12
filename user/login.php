@@ -5,14 +5,12 @@
  * Date: 2017/3/21
  * Time: 17:11
  */
+require_once("../base/base_response.php");
 require_once("UserDao.php");
 require_once("User.php");
 require_once("../model/Resourse.php");
 require_once("../math/KingRandom.php");
 require_once("../util/Se.php");
-
-header('Content-Type: application/json; charset=utf-8');
-$result = new Resourse();
 
 $tempUser = new User();
 $tempUser->userName = $_POST["userName"];
@@ -26,7 +24,7 @@ $queryResult = $userDao->query($tempUser);
 
 if ($queryResult instanceof Resourse && $queryResult->errCode != 0) {
     $queryResult->errMsg = "登录失败";
-    $result = $queryResult;
+    $responseResult = $queryResult;
 } else {
     $res = [];
 
@@ -49,12 +47,11 @@ if ($queryResult instanceof Resourse && $queryResult->errCode != 0) {
     //=----
 //    $res["keyRaw"] = json_encode($keyJson);
 //
-//    $result->res = array_filter($res);
+//    $responseResult->res = array_filter($res);
 
-    $result->res = base64_encode(json_encode($res));
+    $responseResult->res = base64_encode(json_encode($res));
 }
 
 
 $userDao->close();
-$result = (object)array_filter((array)$result);
-echo json_encode($result);
+echo doReturn($responseResult);

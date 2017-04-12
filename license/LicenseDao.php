@@ -152,7 +152,7 @@ class LicenseDao extends BaseDbDao
         // 使用 sql 创建数据表
         $sql = "CREATE TABLE IF NOT EXISTS " . $this->tableName . " (
 id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
-groupId INT(6) UNSIGNED,
+corporationId INT(6) UNSIGNED,
 license VARCHAR(30) NOT NULL UNIQUE,
 cellphone VARCHAR(30),
 date TIMESTAMP)";
@@ -189,7 +189,7 @@ date TIMESTAMP)";
         while ($row = mysqli_fetch_array($queryResult)) {
             $item = [];
             $item["key"] = $row["license"];
-            $item["groupId"] = $row["groupId"];
+            $item["corporationId"] = $row["corporationId"];
             array_push($resultArray, $item);
         }
 

@@ -9,7 +9,7 @@
 require_once("../base/base_authorization_header.php");
 require_once("LicenseDao.php");
 
-$number = $_POST["groupId"];
+$number = $_POST["corporationId"];
 $tLicenseDao = new LicenseDao();
 $tLicenseDao->init();
 $responseResult = $tLicenseDao->getList();

@@ -20,5 +20,5 @@ if (empty($_POST["name"])) {
 
 $tCorporationDao = new CorporationDao();
 $tCorporationDao->init();
-echo json_encode($tCorporationDao->add($tCorporation->name));
+echo doReturn($tCorporationDao->add($tCorporation->name));
 $tCorporationDao->close();
