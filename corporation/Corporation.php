@@ -10,4 +10,13 @@ class Corporation
 {
     public $id;
     public $name;
+    public $createDate;
+    public $updateDate;
+
+    public function updateBySqlResult($row){
+        $this->id = $row["id"];
+        $this->name = $row["name"];
+        $this->createDate = $row["createDate"];
+        $this->updateDate = $row["updateDate"];
+    }
 }

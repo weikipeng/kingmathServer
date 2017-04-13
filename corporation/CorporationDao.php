@@ -63,9 +63,8 @@ updateDate TIMESTAMP)";
             $sqlResult = $this->queryByName($name);
 
             if ($sqlResult) {
-                $res = [];
-                $res["id"] = $sqlResult["id"];
-                $res["name"] = $sqlResult["name"];
+                $res = new Corporation();
+                $res->updateBySqlResult($sqlResult);
                 $tResult->res = $res;
             } else {
                 $tResult->errCode = -1;
@@ -156,8 +155,7 @@ updateDate TIMESTAMP)";
             $resultArray = [];
             while ($row = mysqli_fetch_array($result)) {
                 $item = new Corporation();
-                $item->id = $row["id"];
-                $item->name = $row["name"];
+                $item->updateBySqlResult($row);
                 array_push($resultArray, $item);
             }
 
