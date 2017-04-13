@@ -5,7 +5,7 @@
  * Date: 2017/3/26
  * Time: 21:55
  */
-require_once("../base/base_response.php");
+require_once("../base/base_authorization_header.php");
 require_once("Corporation.php");
 require_once("CorporationDao.php");
 

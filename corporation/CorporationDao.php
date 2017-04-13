@@ -65,7 +65,7 @@ updateDate TIMESTAMP)";
             if ($sqlResult) {
                 $res = new Corporation();
                 $res->updateBySqlResult($sqlResult);
-                $tResult->res = $res;
+                $tResult = $res;
             } else {
                 $tResult->errCode = -1;
                 $tResult->errMsg = "执行添加失败";
