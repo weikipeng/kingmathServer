@@ -16,7 +16,7 @@ $NUM_KEY = 4;
 $nParam = [];
 $nParam["corporation"] = $_POST["c"];
 $nParam["num"] = $_POST["num"];
-$nParam["sign"] = $_POST["sign"];
+$nParam["sign"] = $_POST["s"];
 $nParam["Authorization"] = $headers["Authorization"];
 
 //-检查参数
@@ -30,7 +30,7 @@ if ($nParam["num"] <= 0) {
 //-检查参数
 if (empty($nParam["corporation"])) {
     $responseResult->errCode = -1;
-    $responseResult->errMsg = "请输入公司名字";
+    $responseResult->errMsg = "请输入公司id";
     echo json_encode($responseResult);
     return;
 }
@@ -42,6 +42,7 @@ FOpenLog::e("......" . KingRandom::randKeyString($NUM_KEY));
 
 for ($x = 0; $x <= $nParam["num"]; $x++) {
     $mLicense = new License();
+    $mLicense->corporationId = $nParam["corporation"];
     $mLicense->licenseCode = KingRandom::randKeyString($NUM_KEY);
     if ($tDbDao->insert($mLicense) > 0) {
         FOpenLog::e("插入数据成功");

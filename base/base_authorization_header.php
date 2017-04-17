@@ -13,8 +13,8 @@ $headers = apache_request_headers();
 if (empty($headers["Authorization"]) || !isset($headers["Authorization"])) {
     $responseResult->errCode = -1;
     $responseResult->errMsg = "没有登录";
-    echo json_encode($responseResult);
-    die("没有登录");
+    die(doReturn($responseResult));
+
 }
 
 //-检查用户身份
@@ -26,9 +26,8 @@ $tUserDao->init();
 if (!$tUserDao->verify($headers["Authorization"])) {
     $responseResult->errCode = -2;
     $responseResult->errMsg = "用户无效";
-    echo json_encode($responseResult);
     $tUserDao->close();
-    die("用户无效");
+    die(doReturn($responseResult));
 }
 $tUserDao->close();
 

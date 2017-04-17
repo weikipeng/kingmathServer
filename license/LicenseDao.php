@@ -44,7 +44,12 @@ class LicenseDao extends BaseDbDao
 
         //----
         $sql = "INSERT IGNORE INTO " . $this->tableName
-            . " (license) VALUES ('" . $tLicense->licenseCode . "')";
+            . " (license,corporationId) VALUES ('$tLicense->licenseCode','$tLicense->corporationId')";
+
+//        if (!empty($tLicense->corporationId)) {
+//            $sql = $sql . "";
+//        }
+//
         FOpenLog::e("sql ===>/n $sql");
         return $this->conn->query($sql);
     }
@@ -188,6 +193,41 @@ date TIMESTAMP)";
         //----------
         while ($row = mysqli_fetch_array($queryResult)) {
             $item = [];
+            $item["key"] = $row["license"];
+            $item["corporationId"] = $row["corporationId"];
+            array_push($resultArray, $item);
+        }
+
+        /* close result set */
+        $queryResult->close();
+
+        $tResult->res = array_filter($resultArray);
+
+        return $tResult;
+    }
+
+    public function getListForCorporation($id)
+    {
+        $tResult = new Resourse();
+        $resultArray = [];
+
+        $sql = "SELECT * FROM " . $this->tableName . " Where corporationId='$id'";
+
+        $queryResult = mysqli_query($this->conn, $sql);
+
+        /* determine number of rows result set */
+        $row_cnt = $queryResult->num_rows;
+
+        FOpenLog::e("查询序列号结果集：Result set has %d rows.\n", $row_cnt);
+
+        if ($row_cnt <= 0) {
+            return $tResult;
+        }
+
+        //----------
+        while ($row = mysqli_fetch_array($queryResult)) {
+            $item = [];
+            $item["id"] = $row["id"];
             $item["key"] = $row["license"];
             $item["corporationId"] = $row["corporationId"];
             array_push($resultArray, $item);

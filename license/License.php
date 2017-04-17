@@ -17,7 +17,7 @@ class License
 
     public $ipAddress;
 
-    public $corporation;
+    public $corporationId;
 
     public static function fromResult($dbResult)
     {
