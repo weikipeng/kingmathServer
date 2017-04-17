@@ -1,6 +1,7 @@
 <?php
 require_once("License.php");
 require_once("../model/Resourse.php");
+require_once("../base/base_response.php");
 require_once("../util/FOpenLog.php");
 require_once("../db/BaseDbDao.php");
 
@@ -192,10 +193,47 @@ date TIMESTAMP)";
 
         //----------
         while ($row = mysqli_fetch_array($queryResult)) {
-            $item = [];
-            $item["key"] = $row["license"];
-            $item["corporationId"] = $row["corporationId"];
-            array_push($resultArray, $item);
+            $item = new License();
+            $item->updateQueryValue($row);
+//            $item["key"] = $row["license"];
+//            $item["corporationId"] = $row["corporationId"];
+            array_push($resultArray, arrayFilterNull($item));
+        }
+
+        /* close result set */
+        $queryResult->close();
+
+        $tResult->res = array_filter($resultArray);
+
+        return $tResult;
+    }
+
+    public function getInsertedList(){
+        $tResult = new Resourse();
+        $resultArray = [];
+
+        $idList = join(",",$this->insertIds);
+
+        $sql = "SELECT * FROM " . $this->tableName ." where id in ($idList)";
+
+        $queryResult = mysqli_query($this->conn, $sql);
+
+        /* determine number of rows result set */
+        $row_cnt = $queryResult->num_rows;
+
+        FOpenLog::e("查询序列号结果集：Result set has %d rows.\n", $row_cnt);
+
+        if ($row_cnt <= 0) {
+            return $tResult;
+        }
+
+        //----------
+        while ($row = mysqli_fetch_array($queryResult)) {
+            $item = new License();
+            $item->updateQueryValue($row);
+//            $item["key"] = $row["license"];
+//            $item["corporationId"] = $row["corporationId"];
+            array_push($resultArray, arrayFilterNull($item));
         }
 
         /* close result set */
@@ -226,11 +264,13 @@ date TIMESTAMP)";
 
         //----------
         while ($row = mysqli_fetch_array($queryResult)) {
-            $item = [];
-            $item["id"] = $row["id"];
-            $item["key"] = $row["license"];
-            $item["corporationId"] = $row["corporationId"];
-            array_push($resultArray, $item);
+            $item = new License();
+//            $item["id"] = $row["id"];
+//            $item["key"] = $row["license"];
+//            $item["corporationId"] = $row["corporationId"];
+//            $item["isBind"] = empty($row["cellphone"]);
+            $item->updateQueryValue($row);
+            array_push($resultArray, arrayFilterNull($item));
         }
 
         /* close result set */

@@ -40,22 +40,24 @@ $tDbDao->init();
 
 FOpenLog::e("......" . KingRandom::randKeyString($NUM_KEY));
 
-for ($x = 0; $x <= $nParam["num"]; $x++) {
+$tDbDao->resetInsertId();
+
+for ($x = 0; $x < $nParam["num"]; $x++) {
     $mLicense = new License();
     $mLicense->corporationId = $nParam["corporation"];
     $mLicense->licenseCode = KingRandom::randKeyString($NUM_KEY);
-    if ($tDbDao->insert($mLicense) > 0) {
+    $insertResult = $tDbDao->insert($mLicense);
+    if ($insertResult > 0) {
         FOpenLog::e("插入数据成功");
+        $tDbDao->markInsertId();
     } else {
         FOpenLog::e("插入数据失败");
     }
 }
 
-//$createArray = $tDbDao->queryAll();
-
-$responseResult = $tDbDao->getList();
+$responseResult = $tDbDao->getInsertedList();
 
 $tDbDao->close();
 
-echo json_encode($responseResult)
+echo doReturn($responseResult)
 ?>

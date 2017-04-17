@@ -15,6 +15,8 @@ class BaseDbDao
     protected $dbName = "kingMath";
     protected $conn;
 
+    protected $insertIds;
+
     public function init()
     {
         // 创建连接
@@ -53,5 +55,15 @@ class BaseDbDao
     public function close()
     {
         $this->conn->close();
+    }
+
+    public function resetInsertId()
+    {
+        $this->insertIds = [];
+    }
+
+    public function markInsertId()
+    {
+        array_push($this->insertIds, mysqli_insert_id($this->conn));
     }
 }

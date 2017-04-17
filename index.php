@@ -24,13 +24,16 @@ require_once("math/KingRandom.php");
 //echo json_encode( $stuff );
 
 //---------
-$stuff = array(
-    'label' => 'name 3', 'value' => 3
-);
+//$stuff = array(
+//    'label' => 'name 3', 'value' => 3
+//);
+//
+//$stuff["name"] = "value";
+//echo json_encode($stuff);
 
-$stuff["name"] = "value";
-echo json_encode($stuff);
-
+//------
+$array = [1, 2, 3];
+echo join(",", $array);
 ?>
 
 

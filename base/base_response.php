@@ -16,7 +16,15 @@ function filterNull($data)
 
 function doReturn($result)
 {
+//    $tResult = json_decode(json_encode($result), true);
+//    $tResult = array_filter($tResult,"filterNull");
+//    return json_encode($tResult);
+    return json_encode(arrayFilterNull($result));
+}
+
+function arrayFilterNull($result)
+{
     $tResult = json_decode(json_encode($result), true);
     $tResult = array_filter($tResult,"filterNull");
-    return json_encode($tResult);
+    return $tResult;
 }

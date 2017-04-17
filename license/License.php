@@ -8,16 +8,19 @@
  */
 class License
 {
+    public $id;
     /* 序列号 */
-    public $licenseCode = "111111";
+    public $licenseCode;
     /* 手机号 */
-    public $cellPhone = "18911001100";
+    public $cellPhone;
     /* 签名 */
     public $sign;
 
     public $ipAddress;
 
     public $corporationId;
+
+    public $isBind;
 
     public static function fromResult($dbResult)
     {
@@ -28,5 +31,13 @@ class License
 //        $result->corporation = $dbResult["corporation"];
 
         return $result;
+    }
+
+    public function updateQueryValue($row)
+    {
+        $this->id = $row["id"];
+        $this->licenseCode = $row["license"];
+        $this->corporationId = $row["corporationId"];
+        $this->isBind = !empty($row["cellphone"]);
     }
 }
