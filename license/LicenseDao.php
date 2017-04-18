@@ -160,7 +160,7 @@ class LicenseDao extends BaseDbDao
 id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
 corporationId INT(6) UNSIGNED,
 license VARCHAR(30) NOT NULL UNIQUE,
-cellphone VARCHAR(30),
+cellphone TEXT,
 date TIMESTAMP)";
 
         //IF NOT EXISTS
