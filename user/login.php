@@ -18,8 +18,18 @@ $tempUser->password = $_POST["password"];
 $tempUser->sign = $_POST["s"];
 $tempUser->ipAddress = Se::getClientIP();
 
+
 $userDao = new UserDao();
 $userDao->init();
+
+//-----
+if (!$userDao->checkSign($tempUser)) {
+    $responseResult->errCode = -1;
+    $responseResult->errMsg = "登录失败";
+    die(doReturn($responseResult));
+}
+
+
 $queryResult = $userDao->query($tempUser);
 
 if ($queryResult instanceof Resourse && $queryResult->errCode != 0) {

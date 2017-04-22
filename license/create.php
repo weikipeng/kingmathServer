@@ -11,7 +11,7 @@ require_once("LicenseDao.php");
 require_once("../math/KingRandom.php");
 require_once("License.php");
 require_once("../user/UserDao.php");
-$NUM_KEY = 4;
+$NUM_KEY = 6;
 
 $nParam = [];
 $nParam["corporation"] = $_POST["c"];

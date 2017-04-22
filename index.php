@@ -32,6 +32,8 @@ require_once("math/KingRandom.php");
 //echo json_encode($stuff);
 
 //------
+echo date("Ymd");
+echo "<br>";
 $array = [1, 2, 3];
 echo join(",", $array);
 ?>

@@ -9,10 +9,11 @@ require_once("../db/BaseDbDao.php");
  * Date: 2017/3/21
  * Time: 15:30
  */
+define("KEY_USER_DAO", "CK4APBVXAS9WDW34H163TRJDT5PSJK");
 class UserDao extends BaseDbDao
 {
-    private static $KEY_LICENSE = "MH25KXFYWR5CSJKN67VKP2H95FRBM2";
-    private static $KEY_CELLPHONE = "CK4APBVXAS9WDW34H163TRJDT5PSJK";
+//    static $KEY_LICENSE = "MH25KXFYWR5CSJKN67VKP2H95FRBM2";
+//    const KEY_CELLPHONE = "CK4APBVXAS9WDW34H163TRJDT5PSJK";
 
     protected $tableName = "Users";
     protected $conn;
@@ -121,7 +122,7 @@ updateDate TIMESTAMP)";
             return false;
         }
 
-        $tData = json_decode(base64_decode($data),true);
+        $tData = json_decode(base64_decode($data), true);
         if (empty($tData["key"])) {
             return false;
         }
@@ -142,6 +143,28 @@ updateDate TIMESTAMP)";
         $result->close();
 
         return true;
+    }
+
+    public function checkSign(User $userPostData)
+    {
+        if (!isset($userPostData)) {
+            return false;
+        }
+
+        if (empty($userPostData->sign)) {
+            return false;
+        }
+
+        $nowDate = date("Ymd");
+        $baseUserName = base64_encode($userPostData->userName);
+        $sign = KEY_USER_DAO . $nowDate . $baseUserName . $userPostData->password;
+        $sign = md5($sign);
+
+        if (strcmp($userPostData->sign, $sign) == 0) {
+            return true;
+        }
+
+        return false;
     }
 
 }
