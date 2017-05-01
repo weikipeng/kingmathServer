@@ -4,8 +4,6 @@ require_once("LicenseDao.php");
 require_once("../util/Se.php");
 require_once("../util/NumberUtil.php");
 
-$licenseDao = new LicenseDao();
-
 $tempLicense = new License();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // The request is using the POST method
@@ -17,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $tempLicense->ipAddress = Se::getClientIP();
 
 //    $tempLicense->handleLicencePattern();
+    $licenseDao = new LicenseDao();
 
     //-----
     if (!$licenseDao->checkSign($tempLicense)) {
@@ -24,6 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $responseResult->errMsg = "激活失败";
         die(doReturn($responseResult));
     }
+
+    $licenseDao->init();
 
     $responseResult = $licenseDao->autoVerify($tempLicense);
     echo doReturn($responseResult);

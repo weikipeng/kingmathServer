@@ -39,6 +39,8 @@ class License
     {
         $this->id = $row["id"];
         $this->licenseCode = $row["license"];
+        $this->cellPhone = $row["cellphone"];
+        $this->channel = $row["channel"];
         $this->corporationId = $row["corporationId"];
         $this->isBind = !empty($row["cellphone"]);
     }

@@ -79,6 +79,8 @@ class LicenseDao extends BaseDbDao
         } else if (strcmp($row['cellphone'], $tCellPhone) == 0) {
             $tResult = new License();
             $tResult->updateQueryValue($row);
+
+            $tResult = get_object_vars($tResult);
             //手机号码已经被绑定,匹配正确
             FOpenLog::e("手机号码已经被绑定,匹配正确");
             $tResult["errCode"] = 0;
@@ -140,7 +142,7 @@ class LicenseDao extends BaseDbDao
         $result = mysqli_query($this->conn, $sql);
 
         if ($result) {
-            $result = $this->query($data->licenseCode);
+            $result = $this->query($data);
             if (!($result instanceof Resourse)) {
                 $result = License::fromResult($result);
             }
@@ -342,8 +344,9 @@ date TIMESTAMP)";
 
         //--查询没有被注册的该渠道的验证码
         $channelParam = $license->channel;
+        $phoneParam = $license->cellPhone;
         $sql = "SELECT * FROM " . $this->tableName
-            . " where channel='$channelParam' and cellphone=''";
+            . " where channel='$channelParam' and (cellphone ='' or cellphone is null or cellphone='$phoneParam')";
 
         $queryResult = mysqli_query($this->conn, $sql);
 
@@ -363,12 +366,14 @@ date TIMESTAMP)";
             $tResult = $row;
         }
 
-        $result = License::fromResult($tResult);
+        $otherLicense = License::fromResult($tResult);
+
+        $license->licenseCode = $otherLicense->licenseCode;
 
         /* close result set */
         $queryResult->close();
 
-        return $this->valid($result);
+        return $this->valid($license);
     }
 
     public function checkSign(License $license)
