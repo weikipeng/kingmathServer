@@ -11,12 +11,13 @@ require_once("LicenseDao.php");
 require_once("../math/KingRandom.php");
 require_once("License.php");
 require_once("../user/UserDao.php");
-$NUM_KEY = 6;
+$NUM_KEY = 12;
 
 $nParam = [];
 $nParam["corporation"] = $_POST["c"];
 $nParam["num"] = $_POST["num"];
 $nParam["sign"] = $_POST["s"];
+$nParam["channel"] = $_POST["channel"];
 $nParam["Authorization"] = $headers["Authorization"];
 
 //-检查参数

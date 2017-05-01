@@ -22,13 +22,15 @@ class License
 
     public $isBind;
 
+    public $channel;
+
     public static function fromResult($dbResult)
     {
         $result = new License();
 
         $result->licenseCode = $dbResult["license"];
         $result->cellPhone = $dbResult["cellphone"];
-//        $result->corporation = $dbResult["corporation"];
+        $result->channel = $dbResult["channel"];
 
         return $result;
     }
@@ -40,4 +42,6 @@ class License
         $this->corporationId = $row["corporationId"];
         $this->isBind = !empty($row["cellphone"]);
     }
+
+
 }

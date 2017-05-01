@@ -11,10 +11,10 @@ require_once("../db/BaseDbDao.php");
  * Date: 2017/3/19
  * Time: 12:28
  */
+define("KEY_LICENSE", "MH25KXFYWR5CSJKN67VKP2H95FRBM2");
+
 class LicenseDao extends BaseDbDao
 {
-    private static $KEY_LICENSE = "MH25KXFYWR5CSJKN67VKP2H95FRBM2";
-    private static $KEY_CELLPHONE = "CK4APBVXAS9WDW34H163TRJDT5PSJK";
     protected $tableName = "License";
 
     public function init()
@@ -63,7 +63,7 @@ class LicenseDao extends BaseDbDao
 //        $tCellPhone = base64_encode($data->cellPhone);
         $tCellPhone = $data->cellPhone;
 
-        $row = $this->query($data->licenseCode);
+        $row = $this->query($data);
 
         if ($row instanceof Resourse) {
             return $row;
@@ -77,10 +77,15 @@ class LicenseDao extends BaseDbDao
 //            $tResult->errMsg = "手机号码没有被绑定";
             $tResult = $this->update($data);
         } else if (strcmp($row['cellphone'], $tCellPhone) == 0) {
+            $tResult = new License();
+            $tResult->updateQueryValue($row);
             //手机号码已经被绑定,匹配正确
             FOpenLog::e("手机号码已经被绑定,匹配正确");
-            $tResult->errCode = 0;
-            $tResult->errMsg = "手机号码已经被绑定,匹配正确";
+            $tResult["errCode"] = 0;
+            $tResult["errMsg"] = "手机号码已经被绑定,匹配正确";
+
+//            $tResult->errCode = 0;
+//            $tResult->errMsg = "手机号码已经被绑定,匹配正确";
         } else {
             //手机号码已经被绑定,但不匹配
             FOpenLog::e("手机号码已经被绑定,但不匹配");
@@ -91,11 +96,14 @@ class LicenseDao extends BaseDbDao
         return $tResult;
     }
 
-    public function query($licenseCode)
+    public function query(License $data)
     {
+        $licenseParam = $data->licenseCode;
+        $channelParam = $data->channel;
+
         $tResult = new Resourse();
         $sql = "SELECT * FROM " . $this->tableName .
-            " WHERE license= '$licenseCode'";
+            " WHERE license= '$licenseParam' and channel= '$channelParam'";
 
         $result = mysqli_query($this->conn, $sql);
 
@@ -160,6 +168,7 @@ class LicenseDao extends BaseDbDao
 id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
 corporationId INT(6) UNSIGNED,
 license VARCHAR(30) NOT NULL UNIQUE,
+channel VARCHAR(6) NOT NULL UNIQUE,
 cellphone TEXT,
 date TIMESTAMP)";
 
@@ -208,13 +217,14 @@ date TIMESTAMP)";
         return $tResult;
     }
 
-    public function getInsertedList(){
+    public function getInsertedList()
+    {
         $tResult = new Resourse();
         $resultArray = [];
 
-        $idList = join(",",$this->insertIds);
+        $idList = join(",", $this->insertIds);
 
-        $sql = "SELECT * FROM " . $this->tableName ." where id in ($idList)";
+        $sql = "SELECT * FROM " . $this->tableName . " where id in ($idList)";
 
         $queryResult = mysqli_query($this->conn, $sql);
 
@@ -284,4 +294,125 @@ date TIMESTAMP)";
     public function queryAll()
     {
     }
+
+    public function autoVerify(License $license)
+    {
+        $paramString = "";
+
+        $patternLicense = '/.+￥(.+)￥.+/';
+        if (preg_match($patternLicense, $license->licenseCode, $matches)) {
+
+            if (count($matches) == 2) {
+                $paramString = $matches[1];
+            }
+        }
+
+        if (empty($paramString)) {
+            $tResult = new Resourse();
+            $tResult->errCode = -1;
+            $tResult->errMsg = "验证激活码失败";
+            return $tResult;
+        }
+
+        //解密参数
+        $paramString = base64_decode($paramString);
+        $tParamArray = json_decode($paramString, true);
+
+        $license->licenseCode = $tParamArray["license"];
+        $license->channel = $tParamArray["channel"];
+
+        //自动验证激活
+        $tResult = $this->valid($license);
+
+        //如果验证失败
+        if ($tResult instanceof Resourse) {
+            if ($tResult->errCode != 0) {
+                return $this->autoVerifyOther($license);
+            }
+        } else {
+            return $tResult;
+        }
+    }
+
+    //自动激活其他注册码
+    public function autoVerifyOther(License $license)
+    {
+        $tResult = new Resourse();
+        $resultArray = [];
+
+        //--查询没有被注册的该渠道的验证码
+        $channelParam = $license->channel;
+        $sql = "SELECT * FROM " . $this->tableName
+            . " where channel='$channelParam' and cellphone=''";
+
+        $queryResult = mysqli_query($this->conn, $sql);
+
+        /* determine number of rows result set */
+        $row_cnt = $queryResult->num_rows;
+
+        FOpenLog::e("查询序列号结果集：Result set has %d rows.\n", $row_cnt);
+
+        if ($row_cnt <= 0) {
+            $tResult->errCode = -1;
+            $tResult->errMsg = "绑定手机失败";
+            return $tResult;
+        }
+
+        //----------
+        if ($row = mysqli_fetch_array($queryResult)) {
+            $tResult = $row;
+        }
+
+        $result = License::fromResult($tResult);
+
+        /* close result set */
+        $queryResult->close();
+
+        return $this->valid($result);
+    }
+
+    public function checkSign(License $license)
+    {
+        if (!isset($license)) {
+            return false;
+        }
+
+        if (empty($license->sign)) {
+            return false;
+        }
+
+        $nowDate = date("Ymd");
+
+        $cellPhone64 = base64_encode($license->cellPhone);
+        $license64 = base64_encode($license->licenseCode);
+
+        $sign = KEY_LICENSE . $nowDate . $cellPhone64 . $license64 . $license->channel;
+        $sign = md5($sign);
+
+        if (strcmp($license->sign, $sign) == 0) {
+            return true;
+        }
+
+        return false;
+    }
+
+//protected String getSign(String userName, String license, String channel)
+//{
+//String result = "MH25KXFYWR5CSJKN67VKP2H95FRBM2";
+//String date = DateTool.getYMD();
+//String name = "";
+//try
+//{
+//number = Base64.encodeToString(userName.getBytes("utf-8"), Base64.NO_WRAP);
+//}
+//
+//catch
+//(UnsupportedEncodingException e) {
+//    e . printStackTrace();
+//}
+//
+//            result = result + date + number + license + channel;
+//            result = MD5 . md5(result);
+//            return result;
+//        }
 }
