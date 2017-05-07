@@ -44,14 +44,14 @@ class LicenseDao extends BaseDbDao
         }
 
         //----
-        $sql = "INSERT IGNORE INTO " . $this->tableName
-            . " (license,corporationId) VALUES ('$tLicense->licenseCode','$tLicense->corporationId')";
+        $sql = "INSERT INTO " . $this->tableName
+            . " (license,corporationId,channel) VALUES ('$tLicense->licenseCode','$tLicense->corporationId','$tLicense->channel')";
 
 //        if (!empty($tLicense->corporationId)) {
 //            $sql = $sql . "";
 //        }
 //
-        FOpenLog::e("sql ===>/n $sql");
+        FOpenLog::e("sql ===>/n " . $sql);
         return $this->conn->query($sql);
     }
 
@@ -170,7 +170,7 @@ class LicenseDao extends BaseDbDao
 id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
 corporationId INT(6) UNSIGNED,
 license VARCHAR(30) NOT NULL UNIQUE,
-channel VARCHAR(6) NOT NULL UNIQUE,
+channel VARCHAR(6) NOT NULL,
 cellphone TEXT,
 date TIMESTAMP)";
 
@@ -195,6 +195,7 @@ date TIMESTAMP)";
 
         /* determine number of rows result set */
         $row_cnt = $queryResult->num_rows;
+        $tResult->count = $row_cnt;
 
         FOpenLog::e("查询序列号结果集：Result set has %d rows.\n", $row_cnt);
 
@@ -232,7 +233,7 @@ date TIMESTAMP)";
 
         /* determine number of rows result set */
         $row_cnt = $queryResult->num_rows;
-
+        $tResult->count = $row_cnt;
         FOpenLog::e("查询序列号结果集：Result set has %d rows.\n", $row_cnt);
 
         if ($row_cnt <= 0) {
@@ -321,7 +322,14 @@ date TIMESTAMP)";
         $tParamArray = json_decode($paramString, true);
 
         $license->licenseCode = $tParamArray["license"];
-        $license->channel = $tParamArray["channel"];
+        //----
+//      $license->channel = $tParamArray["channel"];
+        if (strcmp($license->channel, $tParamArray["channel"]) != 0) {
+            $tResult = new Resourse();
+            $tResult->errCode = -1;
+            $tResult->errMsg = "验证激活码失败";
+            return $tResult;
+        }
 
         //自动验证激活
         $tResult = $this->valid($license);

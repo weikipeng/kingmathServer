@@ -17,7 +17,10 @@ $nParam = [];
 $nParam["corporation"] = $_POST["c"];
 $nParam["num"] = $_POST["num"];
 $nParam["sign"] = $_POST["s"];
-$nParam["channel"] = $_POST["channel"];
+if (isset($_POST["channel"])) {
+    $nParam["channel"] = $_POST["channel"];
+}
+
 $nParam["Authorization"] = $headers["Authorization"];
 
 //-检查参数
@@ -46,6 +49,7 @@ $tDbDao->resetInsertId();
 for ($x = 0; $x < $nParam["num"]; $x++) {
     $mLicense = new License();
     $mLicense->corporationId = $nParam["corporation"];
+    $mLicense->channel = $nParam["channel"];
     $mLicense->licenseCode = KingRandom::randKeyString($NUM_KEY);
     $insertResult = $tDbDao->insert($mLicense);
     if ($insertResult > 0) {

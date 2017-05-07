@@ -32,6 +32,7 @@ class CorporationDao extends BaseDbDao
         $sql = "CREATE TABLE IF NOT EXISTS " . $this->tableName . " (
 id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, 
 name VARCHAR(30),
+channel VARCHAR(10),
 createDate TIMESTAMP,
 updateDate TIMESTAMP)";
 
@@ -65,6 +66,10 @@ updateDate TIMESTAMP)";
             if ($sqlResult) {
                 $res = new Corporation();
                 $res->updateBySqlResult($sqlResult);
+                $res->channel = "b0" . "$res->id";
+
+                $this->update($res);
+
                 $tResult = $res;
             } else {
                 $tResult->errCode = -1;
@@ -78,7 +83,11 @@ updateDate TIMESTAMP)";
     public function update(Corporation $corporation)
     {
         $sql = "update " . $this->tableName .
-            " set name = '$corporation->name' WHERE id= '$corporation->id'";
+            " set name = '$corporation->name', channel='$corporation->channel' WHERE id= '$corporation->id'";
+//        $sql = "update " . $this->tableName .
+//            " set (name,channel) values ('$corporation->name','$corporation->channel') WHERE id= '$corporation->id'";
+
+        FOpenLog::e("update sql ===>/n $sql");
 
         $result = mysqli_query($this->conn, $sql);
 

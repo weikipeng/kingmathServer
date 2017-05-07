@@ -11,4 +11,7 @@ class Resourse
     public $errCode = 0;
     public $errMsg = "";
     public $res;
+    public $count = 0;
+    public $offset = 0;
+    public $limit = 0;
 }
